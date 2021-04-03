@@ -1,0 +1,90 @@
+.SearchBlock {
+  background-color: #c2c2c2;
+  border-top: 1px solid #a3a3a3;
+  border-bottom: 1px solid #a3a3a3;
+  padding: 20px 0px;
+
+  .SearchBlock__title {
+    font-family: 'Montserrat';
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 120%;
+    color: #000000;
+    padding: 10px;
+    margin-top: -5px;
+  }
+
+  .SearchBlock__button {
+    padding: 7px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .SearchBlock__searchLineError {
+    font-family: 'Montserrat';
+    font-size: 10px;
+    line-height: 120%;
+  }
+
+  @media screen and(max-width:768px) {
+    .SearchBlock__button {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+}
+
+.SearchBlock__videoEl {
+  .SearchBlock__videoElRow {
+    border-radius: 5px;
+    margin: 20px;
+    box-shadow: 0 0 10px #c5c5c5;
+    overflow: hidden;
+    transition: all ease-in-out 0.3s;
+    transition-duration: 0.5s;
+
+    .SearchBlock__videoPreview {
+      overflow: hidden !important;
+      padding: 0;
+
+      img {
+        transition: all ease-in-out 0.3s;
+      }
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px #6cba00;
+
+      .SearchBlock__videoPreview {
+        img {
+          -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    h3 {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      font-family: 'Montserrat';
+      font-size: 20px;
+      line-height: 120%;
+      color: #434343;
+    }
+
+    img {
+      border-radius: 5px;
+    }
+  }
+
+  a {
+    color: #000000;
+    text-decoration: none;
+
+    &:hover {
+      h3 {
+        text-decoration: underline;
+      }
+    }
+  }
+}

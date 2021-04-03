@@ -1,6 +1,7 @@
 import React from 'react'
 import { Container } from 'react-bootstrap'
 import './Main.scss'
+import SearchBlock from './SearchBlock/SearchBlock'
 
 interface MainProps {}
 
@@ -10,7 +11,7 @@ class Main extends React.Component<MainProps, MainState> {
   render() {
     return (
       <Container fluid className="Main p-0">
-        <h1>Main</h1>
+        <SearchBlock />
       </Container>
     )
   }

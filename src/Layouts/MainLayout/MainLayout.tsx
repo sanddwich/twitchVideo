@@ -16,7 +16,7 @@ class MainLayout extends React.Component<MainLayoutProps, MainLayoutState> {
   render() {
     return (
       <Container fluid className="MainLayout p-0">
-        <MainHeader />
+        {/* <MainHeader /> */}
         <MainBody>
           <Switch>
             <Route path="/" exact component={Main} />
@@ -26,7 +26,7 @@ class MainLayout extends React.Component<MainLayoutProps, MainLayoutState> {
           </Switch>
         </MainBody>
 
-        <MainFooter />
+        {/* <MainFooter /> */}
       </Container>
     )
   }
