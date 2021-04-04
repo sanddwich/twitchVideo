@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import Config from '../../../../../Config/Config'
+import Error from '../Error/Error'
 import Loading from '../Loading/Loading'
 import './SearchBlock.scss'
 
@@ -39,7 +40,7 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
       loading: false,
     }
 
-    console.log(this.state.likeVideo)
+    // console.log(this.state.likeVideo)
   }
 
   validate = (): boolean => {
@@ -102,16 +103,18 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
     })
     const responseResult = await response.json()
 
-    console.log(responseResult)
+    // console.log(responseResult)
 
-    responseResult.videos[0]
-      ? this.setState({
-          videoList: responseResult.videos,
-          videoListVisible: true,
-          videosCount: responseResult._total,
-          loading: false,
-        })
-      : this.setState({ error: true, loading: false })
+    this.setState({
+      videoList: responseResult.videos,
+      videoListVisible: true,
+      videosCount: responseResult._total,
+      loading: false,
+    })
+
+    responseResult._total === 0 ? this.setState({error: true}) : this.setState({error: false})
+
+    // console.log(this.state)
   }
 
   setPaginationPage = (num: number): void => {
@@ -143,9 +146,54 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
     this.setState({ likeVideo })
   }
 
+  toggleLikeBar = (): void => {
+    const likeVideoVisible = !this.state.likeVideoVisible
+    this.setState({ likeVideoVisible })
+  }
+
   render() {
     return (
       <React.Fragment>
+        <div className="likeImg">
+          <img src="/img/like_mini.png" alt="" onClick={() => this.toggleLikeBar()} />
+        </div>
+
+        {this.state.likeVideoVisible ? (
+          <div className="likeVideoList">
+            <Container fluid className="likeVideoList__elements">
+              <Row className="likeVideoList__title m-0 p-2">
+                <h3>Избранное: </h3>
+              </Row>
+              {this.state.likeVideo.map((videoEl: any) => {
+                return (
+                  <React.Fragment key={videoEl._id}>
+                    <Row className="d-flex justify-content-end">
+                      <div className="position-relative">
+                        <img
+                          className="closeBtn"
+                          src="/img/close.png"
+                          alt=""
+                          onClick={() => this.removeFromLikeVideo(videoEl._id)}
+                        />
+                      </div>
+                    </Row>
+                    <Row className="likeVideosList__element m-0">
+                      <Col xs={4} className="likeVideosList__elementImg p-0 d-flex align-items-center">
+                        <img className="imf-fluid" src={`${videoEl.preview.small}`} alt={`${videoEl.title}`} />
+                      </Col>
+                      <Col xs={8} className="likeVideosList__elementImg p-0 d-flex align-items-center">
+                        <a href={`${videoEl.url}`} target="_blank">
+                          <h6>{videoEl.title}</h6>
+                        </a>
+                      </Col>
+                    </Row>
+                  </React.Fragment>
+                )
+              })}
+            </Container>
+          </div>
+        ) : null}
+
         <Container fluid className="SearchBlock">
           <Container className="SearchBlock__container p-0">
             <Row className="SearchBlock__Row m-0">
@@ -180,6 +228,9 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
           </Container>
         </Container>
 
+        
+        {this.state.error ? <Error /> : null}
+
         {this.state.loading ? (
           <Loading />
         ) : (
@@ -194,16 +245,12 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
                             md={4}
                             className="SearchBlock__videoPreview d-flex align-items-center justify-content-center"
                           >
-                            <img
-                              className="img-fluid"
-                              src={`${videoEl.preview.medium}`}
-                              alt={`${videoEl.preview.title}`}
-                            />
+                            <img className="img-fluid" src={`${videoEl.preview.medium}`} alt={`${videoEl.title}`} />
                           </Col>
                           <Col md={8} className="SearchBlock__videoTitle d-flex align-items-center">
                             <div className="SearchBlock__videoTitleCont">
                               <a href={`${videoEl.url}`} target="_blank" rel="noreferrer">
-                                <h3>{videoEl._id}</h3>
+                                <h3>{videoEl.title}</h3>
                               </a>
 
                               {typeof this.state.likeVideo.find((item: any) => item._id === videoEl._id) ===
