@@ -13,7 +13,7 @@ interface SearchBlockState {
   searchStringError: boolean
   videoList: any[]
   videoListVisible: boolean
-  likeVideo: any[]
+  likeVideo: any
   videosCount: number
   paginationCurPage: number
   likeVideoVisible: boolean
@@ -33,14 +33,13 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
       videoListVisible: false,
       videosCount: 0,
       paginationCurPage: 0,
-      likeVideo: JSON.parse(localStorage.getItem('likeVideoList') || ''),
+      likeVideo: JSON.parse(localStorage.getItem('likeVideoList') || '[]'),
       likeVideoVisible: false,
       error: false,
       loading: false,
     }
 
     console.log(this.state.likeVideo)
-    console.log(this.state.videoList)
   }
 
   validate = (): boolean => {
@@ -120,19 +119,29 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
     this.setState({ paginationCurPage: num })
   }
 
-  addToLikeVideo = (id: number): void => {
-    const video = this.state.videoList.find((video) => (video._id = id))
-    const likeVideo = this.state.likeVideo
-    if (likeVideo.length !== 0) {
-      likeVideo.push(video)
-      localStorage.removeItem('likeVideoList')
-      localStorage.setItem('likeVideoList', JSON.stringify(likeVideo))
-    } else {
-      localStorage.setItem('likeVideoList', JSON.stringify([video]))
-    }
+  addToLikeVideo = (idNum: number): void => {
+    const video = this.state.videoList.find((video) => video._id === idNum)
+    let likeVideo = this.state.likeVideo
+
+    likeVideo = likeVideo.filter((lv: any) => lv._id !== video._id)
+    likeVideo.push(video)
+    this.updateLikeVideos(likeVideo)
   }
 
-  removeFromLikeVideo = (id: number): void => {}
+  removeFromLikeVideo = (id: number): void => {
+    const video = this.state.videoList.find((video) => video._id === id)
+    let likeVideo = this.state.likeVideo
+
+    likeVideo = likeVideo.filter((lv: any) => lv._id !== video._id)
+    this.updateLikeVideos(likeVideo)
+  }
+
+  updateLikeVideos = (likeVideo: any): void => {
+    // console.log(likeVideo)
+    localStorage.removeItem('likeVideoList')
+    localStorage.setItem('likeVideoList', JSON.stringify(likeVideo))
+    this.setState({ likeVideo })
+  }
 
   render() {
     return (
@@ -193,11 +202,12 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
                           </Col>
                           <Col md={8} className="SearchBlock__videoTitle d-flex align-items-center">
                             <div className="SearchBlock__videoTitleCont">
-                              <a href={`${videoEl.url}`} target="_blank">
-                                <h3>{videoEl.title}</h3>
+                              <a href={`${videoEl.url}`} target="_blank" rel="noreferrer">
+                                <h3>{videoEl._id}</h3>
                               </a>
 
-                              {typeof this.state.likeVideo.find((item) => item._id === videoEl._id) === 'undefined' ? (
+                              {typeof this.state.likeVideo.find((item: any) => item._id === videoEl._id) ===
+                              'undefined' ? (
                                 <div className="SearchBlock__toLike d-flex">
                                   <Button
                                     variant="success"
@@ -208,7 +218,18 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
                                     Добавить в избранное
                                   </Button>
                                 </div>
-                              ) : null}
+                              ) : (
+                                <div className="SearchBlock__toLike d-flex">
+                                  <Button
+                                    variant="danger"
+                                    size="sm"
+                                    className="SearchBlock__button m-2"
+                                    onClick={() => this.removeFromLikeVideo(videoEl._id)}
+                                  >
+                                    Удалить из избранного
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </Col>
                         </Row>
@@ -219,7 +240,7 @@ export default class SearchBlock extends React.Component<SearchBlockProps, Searc
             </Container>
 
             {this.state.videoListVisible ? (
-              <Container className="SearchBlock__pagination pt-3">
+              <Container key={this.state.likeVideo} className="SearchBlock__pagination pt-3">
                 <div className="SearchBlock__paginationDiv">
                   {this.state.paginationCurPage !== 0 ? (
                     <Button
